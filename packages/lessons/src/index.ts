@@ -20,3 +20,5 @@ export {
 export { getVerifier, hasVerifier, registerVerifier } from "./verifier-registry.ts";
 export { LOOP_EXAMPLES, EXAMPLE_CATEGORIES, resolveVerifierSpec } from "./examples.ts";
 export type { LoopExample, ExampleCategory, VerifierSpec } from "./examples.ts";
+export { GUIDE } from "./guide.ts";
+export type { GuideSection, GuideBlock } from "./guide.ts";

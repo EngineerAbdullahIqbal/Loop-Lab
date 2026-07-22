@@ -153,4 +153,16 @@ export const en: Catalog = {
   "gallery.gate": "Human gate",
   "gallery.or": "or",
   "gallery.note": "Every trace replays through the real loop runner with a real verifier — labeled Simulation, honestly.",
+
+  // --- Guide page ---------------------------------------------------------
+  "guide.navLink": "📖 Guide",
+  "guide.backLink": "◉ Playground",
+  "guide.eyebrow": "The complete theory",
+  "guide.title": "Loop Engineering: The Complete Guide",
+  "guide.sub": "Everything behind the playground — from the chai on your stove to the three debts of production loops. Read a part, then go do its lab.",
+  "guide.contents": "Contents",
+  "guide.teachIt": "Teach-It Box",
+  "guide.partLabel": "Part",
+  "guide.openPlayground": "Try it in the playground ↗",
+  "guide.footer": "Read it. Play it. Teach it — that's the whole point.",
 };

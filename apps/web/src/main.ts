@@ -9,6 +9,7 @@ import { renderRunaway } from "./activities/runaway.ts";
 import { renderBuilder } from "./activities/builder.ts";
 import { renderAgentStudio } from "./activities/agent-studio.ts";
 import { renderGallery } from "./gallery.ts";
+import { renderGuidePage } from "./guide-page.ts";
 import { LOOP_EXAMPLES } from "@loop-lab/lessons";
 
 /** Maps a lesson's activity type to its renderer. New activity = new entry. */
@@ -46,9 +47,7 @@ function themeToggle(): HTMLButtonElement {
   return btn;
 }
 
-function render(): void {
-  const app = document.getElementById("app");
-  if (!app) return;
+function renderPlayground(app: HTMLElement): void {
   const lessons = getLessons();
 
   // --- header + nav ------------------------------------------------------
@@ -59,6 +58,7 @@ function render(): void {
     const a = el("a", { href: `#${l.id}`, class: "nav-link" }, num(l.order));
     nav.appendChild(a);
   }
+  nav.appendChild(el("a", { href: "#/guide", class: "nav-link guide-link" }, t("guide.navLink")));
   header.appendChild(nav);
   header.appendChild(themeToggle());
   header.appendChild(el("div", { class: "badge" }, `<span class="dot"></span><span>${t("app.simulationBadge")}</span>`));
@@ -165,4 +165,21 @@ function setupReveal(): void {
   targets.forEach((t) => io.observe(t));
 }
 
-render();
+// --- hash router: "#/guide" → Guide page, anything else → playground -------
+const isGuideHash = () => location.hash.startsWith("#/guide");
+let currentView: "guide" | "playground" | null = null;
+
+function route(): void {
+  const app = document.getElementById("app");
+  if (!app) return;
+  const view = isGuideHash() ? "guide" : "playground";
+  if (view === currentView) return; // plain anchor jump — no re-render
+  currentView = view;
+  app.innerHTML = "";
+  window.scrollTo(0, 0);
+  if (view === "guide") renderGuidePage(app, themeToggle);
+  else renderPlayground(app);
+}
+
+window.addEventListener("hashchange", route);
+route();
