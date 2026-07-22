@@ -1,0 +1,21 @@
+{
+  "name": "@loop-lab/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Loop Lab v2 learner web app (lessons, dashboard, capstone). Vite + vanilla TS.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@loop-lab/loop-core": "workspace:*",
+    "@loop-lab/verifiers": "workspace:*",
+    "@loop-lab/lessons": "workspace:*",
+    "@loop-lab/strings": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

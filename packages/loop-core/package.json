@@ -1,0 +1,13 @@
+{
+  "name": "@loop-lab/loop-core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The shared loop-runner abstraction: reason -> act -> observe -> check, with pluggable sources (simulation | real).",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@loop-lab/verifiers": "workspace:*"
+  }
+}

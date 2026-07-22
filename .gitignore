@@ -1,0 +1,12 @@
+node_modules/
+.pnpm-store/
+dist/
+*.log
+__pycache__/
+*.pyc
+.venv/
+apps/agent-runner/.venv/
+.DS_Store
+.env
+.env.*
+!.env.example

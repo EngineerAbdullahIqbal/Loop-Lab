@@ -1,0 +1,143 @@
+import type { Catalog } from "./types.ts";
+
+/**
+ * English catalog. Every learner-facing string in the product lives here (or is
+ * registered at runtime via registerStrings). Keys are namespaced by lesson.
+ */
+export const en: Catalog = {
+  // --- app-level ---------------------------------------------------------
+  "app.name": "Loop Lab",
+  "app.simulationBadge": "Simulation",
+  "app.runLoop": "Run loop",
+  "app.runForReal": "Run for real",
+  "app.run": "Run",
+  "app.reset": "Reset",
+  "app.hero.eyebrow": "reason → act → observe → check",
+  "app.hero.title": "Loops: the next layer of working with AI",
+  "app.hero.sub":
+    "Loop engineering is designing a system that reasons, acts, observes, and checks its own work — repeating until a verifier passes. Watch it happen, then build one yourself.",
+  "app.hero.cta": "Start the playground ↓",
+  "app.hero.note": "No signup. No API key. Runs in your browser.",
+  "app.footer.title": "Three things to carry with you",
+  "app.footer.beats.h": "The four beats",
+  "app.footer.beats.p": "Reason → Act → Observe → Check, on repeat. That cycle is the whole engine of an agent.",
+  "app.footer.stops.h": "Two ways to stop",
+  "app.footer.stops.p": "A success stop when the verifier passes, and a safety stop when steps run out. Never ship a loop with only one.",
+  "app.footer.verifier.h": "The verifier steers",
+  "app.footer.verifier.p": "Your check is the steering wheel. A sharp, testable verifier turns a chatbot into a system that gets things right.",
+  "app.footer.closing": "You can now explain loop engineering to someone else. That's the whole point.",
+
+  // --- L1: Prompt vs Loop (the number game) -----------------------------
+  "l01.title": "Prompting vs. Loop Engineering",
+  "l01.concept": "Same guessing game — the only difference is who uses the hints.",
+  "l01.hook":
+    "Left: the model guesses once, and you have to say if it's right. Right: the loop guesses, hears “higher” or “lower”, and closes in all by itself.",
+  "l01.task": "Find the secret number between 1 and 50.",
+  "l01.oneShot": "Is it 17?",
+  "l01.oneShotNote": "One guess, no feedback used. <b>Telling it “higher” or “lower” is now your job.</b>",
+  "l01.checkpoint":
+    "Which side used the “higher / lower” hints to fix its next guess — you, or the loop?",
+  "l01.youLearned": "In a loop, the machine uses the feedback — you don't have to.",
+
+  // --- L2: The Four Beats -----------------------------------------------
+  "l02.title": "Four beats, repeating",
+  "l02.concept": "Every loop you just watched is these four moves on repeat.",
+  "l02.hook": "Click a beat to see what it does. They run in order, over and over, until the check passes.",
+  "l02.checkpoint": "Name the one beat that actually changes the world. (Hint: only one of them does.)",
+  "l02.youLearned": "Every loop is these four beats, over and over.",
+  "l02.reason.name": "Reason",
+  "l02.reason.desc": "The model thinks about the current state and plans its next move — it decides, it doesn't act yet.",
+  "l02.act.name": "Act",
+  "l02.act.desc": "It does one concrete thing: writes text, calls a tool, makes a guess. The only beat that changes the world.",
+  "l02.observe.name": "Observe",
+  "l02.observe.desc": "It reads back the result of the action — the fresh facts it will reason over next time.",
+  "l02.check.name": "Check",
+  "l02.check.desc": "The verifier tests the result against the goal and decides: pass and halt, or loop again.",
+
+  // --- L3: The Verifier (fix the goal) ----------------------------------
+  "l03.title": "The verifier is the steering wheel",
+  "l03.concept": "A goal you can check is a goal you can loop on.",
+  "l03.hook":
+    "\"Make the text message nice\" can't be tested, so a loop can't chase it. Rewrite it so a machine can mark it pass or fail — then run it.",
+  "l03.vagueGoal": "make the text message short and nice",
+  "l03.hint": "A checkable goal names a number or a condition: \"10 words or fewer\", \"has a greeting\", \"no ALL CAPS\", \"ends with a question\".",
+  "l03.checkpoint": "Rewrite the vague goal above so a machine could mark your version pass or fail.",
+  "l03.youLearned": "A goal you can't check, you can't loop on.",
+
+  // --- L4: Two Exits (break it) -----------------------------------------
+  "l04.title": "What happens when the check never passes?",
+  "l04.concept": "Two exits, always: one for success, one for safety.",
+  "l04.hook":
+    "Break the verifier so it can never pass. With the safety stop ON, the loop gives up gracefully. Turn it OFF and watch it run away — then you pull the plug.",
+  "l04.breakVerifier": "Break the verifier",
+  "l04.safetyStop": "Safety stop (max 10)",
+  "l04.pullPlug": "⛔ PULL THE PLUG",
+  "l04.takeaway": "A verifier that never passes means the success stop never fires. Without a safety stop, the loop just… keeps spending.",
+  "l04.checkpoint": "Turn the safety stop back ON and run again. Who stops the loop now — you, or the loop itself?",
+  "l04.youLearned": "Every loop needs two exits: one for success, one for safety.",
+
+  // --- L5: Build your own loop ------------------------------------------
+  "l05.title": "Build your own loop",
+  "l05.concept": "Assemble the parts. Your verifier rule actually gates the run.",
+  "l05.hook": "Fill in the fields. Your goal must be checkable before Run unlocks. Then take the prompt anywhere.",
+  "l05.field.goal": "Goal — must be checkable",
+  "l05.field.act": "Act — what to do each cycle",
+  "l05.field.observe": "Observe — what to read back",
+  "l05.field.verifier": "Verifier rule — the pass/fail test",
+  "l05.field.max": "Max steps",
+  "l05.field.gate": "Human gate",
+  "l05.ph.goal": "e.g. reply is 10 words or fewer",
+  "l05.ph.act": "e.g. write a friendly reply",
+  "l05.ph.observe": "e.g. count the words",
+  "l05.ph.verifier": "e.g. words <= 10",
+  "l05.gate.none": "no gate — full auto",
+  "l05.gate.onstop": "ask a human on safety stop",
+  "l05.gate.everystep": "approve every step",
+  "l05.copy": "Copy as prompt",
+  "l05.checkpoint": "Give your loop a checkable goal AND a max-steps cap, then run it. Did it stop for the right reason?",
+  "l05.youLearned": "A loop is a goal, a check, and two ways to stop.",
+
+  // --- L6: Agent Studio (real AI) ---------------------------------------
+  "l06.title": "Agent Studio — build your own real agent",
+  "l06.concept": "Fill in the blanks. Watch YOUR agent think, fetch real data, and check itself.",
+  "l06.hook": "Name it, give it a role and a checkable goal, pick a tool, set the stops — then press Run and watch a real model run the loop you designed.",
+  "l06.checkpoint": "Give your agent a checkable goal and one tool, run it, and read its OBSERVE line — what real data did it pull in?",
+  "l06.youLearned": "An agent is your loop, running on a real model, with tools you chose.",
+  "l06.field.name": "Agent name",
+  "l06.field.role": "Role — who it is",
+  "l06.field.goal": "Goal — must be checkable",
+  "l06.field.tools": "Tools — what it may use",
+  "l06.field.verifier": "Verifier — the pass/fail rule",
+  "l06.field.max": "Max steps",
+  "l06.field.gate": "Human gate",
+  "l06.field.key": "Groq API key (optional) — used this session only",
+  "l06.field.schedule": "Schedule (optional) — e.g. every day at 9",
+  "l06.ph.name": "e.g. Study Buddy",
+  "l06.ph.role": "e.g. a concise research assistant for students",
+  "l06.ph.goal": "e.g. summarize today's top tech headline in 20 words or fewer",
+  "l06.ph.key": "gsk_… (leave blank to use Simulation or the platform key)",
+  "l06.tool.fetch": "web-fetch (read a web page)",
+  "l06.tool.search": "web-search (find pages)",
+  "l06.run": "Run my agent ▸",
+  "l06.field.model": "Model",
+  "l06.connecting": "Calling Groq…",
+  "l06.connectingRunner": "Connecting to the agent runner…",
+  "l06.simFallback": "No key and runner offline — running in labeled Simulation.",
+  "l06.groqFail": "Groq call failed — falling back.",
+  "l06.toolsBrowserNote": "Real data tools (MCP) run through the local agent-runner. With a browser key, the agent reasons model-only.",
+  "l06.note": "Paste a free Groq key (console.groq.com) to run a REAL model right here in your browser — no backend needed. Leave it blank to use the local agent-runner or Simulation.",
+  "l06.realBadge": "Groq · live",
+  // scheduling
+  "l06.sched.title": "Schedule it to run on a timer (optional)",
+  "l06.sched.freq": "How often",
+  "l06.sched.daily": "Every day",
+  "l06.sched.hourly": "Every hour",
+  "l06.sched.weekly": "Every week (Mon)",
+  "l06.sched.at": "at",
+  "l06.sched.btn": "Schedule agent",
+  "l06.sched.need": "Scheduling needs the local agent-runner backend running.",
+  "l06.sched.ok": "Scheduled ✓ — cron",
+  "l06.sched.list": "Scheduled agents",
+  "l06.sched.cancel": "Cancel",
+  "l06.sched.none": "Nothing scheduled yet.",
+};

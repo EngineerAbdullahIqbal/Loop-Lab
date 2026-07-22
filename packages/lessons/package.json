@@ -1,0 +1,15 @@
+{
+  "name": "@loop-lab/lessons",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Lesson data + schema/loader. A lesson is DATA (+ optional pure verifier), never a fork of page code.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@loop-lab/loop-core": "workspace:*",
+    "@loop-lab/verifiers": "workspace:*",
+    "@loop-lab/strings": "workspace:*"
+  }
+}

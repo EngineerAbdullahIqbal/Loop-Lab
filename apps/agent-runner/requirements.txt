@@ -1,0 +1,7 @@
+# Real-AI runtime deps (the offline loop engine + tests need NONE of these).
+groq>=0.11
+mcp>=1.2
+fastapi>=0.110
+uvicorn[standard]>=0.29
+apscheduler>=3.10
+python-dotenv>=1.0

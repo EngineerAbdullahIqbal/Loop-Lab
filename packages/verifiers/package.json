@@ -1,0 +1,10 @@
+{
+  "name": "@loop-lab/verifiers",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Pure, framework-agnostic verifier library: (input) => { pass, reasons[] }.",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

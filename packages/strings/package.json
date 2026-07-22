@@ -1,0 +1,10 @@
+{
+  "name": "@loop-lab/strings",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Centralized i18n string catalog. No learner-facing text lives outside this package (Urdu translation later, no code changes).",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

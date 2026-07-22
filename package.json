@@ -1,0 +1,18 @@
+{
+  "name": "loop-lab",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "pnpm@9.15.9",
+  "description": "Loop Lab v2 — a free, real-AI platform teaching loop engineering to non-coders (monorepo).",
+  "scripts": {
+    "dev": "pnpm --filter @loop-lab/web dev",
+    "build": "pnpm --filter @loop-lab/web build",
+    "test": "node --test packages/*/test/*.test.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.base.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/node": "^22.10.0"
+  }
+}

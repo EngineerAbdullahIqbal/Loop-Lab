@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Loop Playground — learn loop engineering by doing</title>
+<meta name="description" content="A hands-on, in-browser playground that teaches loop engineering: reason, act, observe, check — until the goal is verified. No signup, no key required.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #0a0d13; color: #e7eaf0; font-family: 'IBM Plex Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #4d9fff; text-decoration: none; }
+  a:hover { color: #7bb8ff; }
+  ::selection { background: rgba(77,159,255,0.3); }
+  button { font-family: 'IBM Plex Sans', sans-serif; }
+  input, select { font-family: inherit; }
+  input:focus, select:focus, button:focus-visible { outline: 2px solid #4d9fff; outline-offset: 2px; }
+  select option { background: #10151d; color: #e7eaf0; }
+  @keyframes lp-spin { to { transform: rotate(360deg); } }
+  @keyframes lp-spin-rev { to { transform: rotate(-360deg); } }
+  @keyframes lp-pulse { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
+  @keyframes lp-blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+  @keyframes lp-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  @keyframes lp-shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+  .lp-cursor { display:inline-block; width:8px; height:14px; background:#4d9fff; margin-left:1px; vertical-align:-2px; animation:lp-blink 1s step-end infinite; }
+  .lp-btn-primary { transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease; }
+  .lp-btn-primary:hover { filter: brightness(1.08); }
+  .lp-hover-border { transition: border-color 0.15s, background 0.15s; }
+  .lp-hover-border:hover { border-color: #4d9fff !important; }
+  .term-line { display:flex; gap:12px; }
+  .term-ts { color:#3b4657; flex:0 0 52px; white-space:nowrap; text-align:right; }
+  .term-txt { flex:1 1 auto; min-width:0; white-space:pre-wrap; overflow-wrap:anywhere; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+  @media (max-width: 760px) {
+    .s2-grid, .s3-grid, .s5-grid { grid-template-columns: 1fr !important; }
+  }
+</style>
+</head>
+<body>
+
+<div style="min-height:100vh; width:100%; overflow-x:hidden;">
+
+  <header style="position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:14px 28px; background:rgba(10,13,19,0.82); backdrop-filter:blur(10px); border-bottom:1px solid #1a212c;">
+    <div style="display:flex; align-items:center; gap:11px;">
+      <svg width="26" height="26" viewBox="0 0 40 40" style="display:block;" aria-hidden="true">
+        <circle cx="20" cy="20" r="14" fill="none" stroke="#2b3442" stroke-width="2.5"></circle>
+        <circle cx="20" cy="6" r="3.4" fill="#4d9fff"></circle>
+        <circle cx="34" cy="20" r="3.4" fill="#f4a52a"></circle>
+        <circle cx="20" cy="34" r="3.4" fill="#3ddc97"></circle>
+        <circle cx="6" cy="20" r="3.4" fill="#ff5d5d"></circle>
+      </svg>
+      <span style="font-weight:600; font-size:15px; letter-spacing:-0.01em;">The Loop Playground</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; padding:5px 11px; border:1px solid #243247; border-radius:999px; background:rgba(77,159,255,0.06);">
+      <span style="width:7px; height:7px; border-radius:50%; background:#3ddc97; box-shadow:0 0 8px #3ddc97; animation:lp-pulse 2.4s ease-in-out infinite;"></span>
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#a9b2c1; white-space:nowrap;">Simulation mode</span>
+    </div>
+  </header>
+
+  <!-- ============ S0 — HERO ============ -->
+  <section id="s0" style="position:relative; min-height:calc(100vh - 55px); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:80px 24px; overflow:hidden;">
+    <div aria-hidden="true" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none;">
+      <div style="position:relative; width:min(760px,120vw); height:min(760px,120vw); opacity:0.5;">
+        <div style="position:absolute; inset:0; animation:lp-spin 44s linear infinite;">
+          <svg viewBox="0 0 400 400" width="100%" height="100%" style="display:block;">
+            <defs>
+              <radialGradient id="lp-hero-glow" cx="50%" cy="50%" r="50%">
+                <stop offset="60%" stop-color="transparent"></stop>
+                <stop offset="100%" stop-color="rgba(77,159,255,0.04)"></stop>
+              </radialGradient>
+            </defs>
+            <circle cx="200" cy="200" r="150" fill="none" stroke="#1c2431" stroke-width="1.5"></circle>
+            <circle cx="200" cy="200" r="150" fill="none" stroke="url(#lp-hero-glow)" stroke-width="60"></circle>
+            <circle cx="200" cy="200" r="150" fill="none" stroke="#2f3a4c" stroke-width="2" stroke-dasharray="4 14" stroke-linecap="round"></circle>
+            <circle cx="200" cy="50" r="9" fill="#4d9fff" style="animation:lp-pulse 3.2s ease-in-out infinite;"></circle>
+            <circle cx="350" cy="200" r="9" fill="#f4a52a" style="animation:lp-pulse 3.2s ease-in-out infinite; animation-delay:0.8s;"></circle>
+            <circle cx="200" cy="350" r="9" fill="#3ddc97" style="animation:lp-pulse 3.2s ease-in-out infinite; animation-delay:1.6s;"></circle>
+            <circle cx="50" cy="200" r="9" fill="#ff5d5d" style="animation:lp-pulse 3.2s ease-in-out infinite; animation-delay:2.4s;"></circle>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:relative; z-index:2; max-width:820px; display:flex; flex-direction:column; align-items:center; gap:26px;">
+      <div style="display:inline-flex; align-items:center; gap:9px; padding:6px 14px; border:1px solid #243247; border-radius:999px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#8a93a3; background:rgba(255,255,255,0.02);">
+        <span style="color:#4d9fff;">reason</span><span style="color:#3b4657;">→</span><span style="color:#f4a52a;">act</span><span style="color:#3b4657;">→</span><span style="color:#3ddc97;">observe</span><span style="color:#3b4657;">→</span><span style="color:#ff5d5d;">check</span>
+      </div>
+      <h1 style="margin:0; font-size:clamp(36px,6vw,68px); line-height:1.05; font-weight:700; letter-spacing:-0.03em;"><span style="color:#4d9fff;">Loops</span>: The Next Layer<br>of Working with AI</h1>
+      <p style="margin:0; font-size:clamp(17px,2.2vw,21px); line-height:1.5; color:#a9b2c1; max-width:620px;">Loop engineering is designing a system that <strong style="color:#e7eaf0; font-weight:600;">reasons, acts, observes, and checks its own work</strong> — repeating until the goal is verified. Watch it happen, then build one yourself.</p>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:14px; margin-top:6px;">
+        <button id="startBtn" class="lp-btn-primary" style="cursor:pointer; font-size:16px; font-weight:600; color:#0a0d13; background:#4d9fff; border:none; padding:15px 26px; border-radius:11px; box-shadow:0 8px 30px rgba(77,159,255,0.35);">Start with a broken workflow ↓</button>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#5f6a7b;">No signup. No API key. Runs entirely in your browser.</span>
+      </div>
+    </div>
+    <div aria-hidden="true" style="position:absolute; bottom:26px; left:50%; transform:translateX(-50%); font-family:'IBM Plex Mono',monospace; font-size:11px; color:#3b4657; letter-spacing:0.15em; animation:lp-float 2.8s ease-in-out infinite;">SCROLL ↓</div>
+  </section>
+
+  <!-- ============ S1 — SPLIT SCREEN ============ -->
+  <section id="s1" style="position:relative; padding:88px 24px 96px; border-top:1px solid #141a24; background:linear-gradient(180deg,#0a0d13,#0b0f16);">
+    <div style="max-width:1240px; margin:0 auto;">
+      <div style="text-align:center; max-width:760px; margin:0 auto 14px;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.14em; color:#4d9fff; text-transform:uppercase; margin-bottom:14px;">01 · The split screen</div>
+        <h2 style="margin:0 0 12px; font-size:clamp(28px,4vw,44px); font-weight:700; letter-spacing:-0.025em;">Prompting vs. Loop Engineering</h2>
+        <p style="margin:0; font-size:17px; line-height:1.5; color:#a9b2c1;">Same task, same model. The only difference is <em style="color:#e7eaf0; font-style:normal; font-weight:600;">who does the checking.</em></p>
+      </div>
+
+      <div style="display:flex; flex-direction:column; align-items:center; gap:10px; margin:26px 0 34px;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#8a93a3; padding:9px 16px; border:1px dashed #2a333f; border-radius:8px; background:rgba(255,255,255,0.015); text-align:center;">TASK — <span style="color:#e7eaf0;">Write a product description under 20 words with no hype words.</span></div>
+        <button id="runBothBtn" class="lp-hover-border" style="cursor:pointer; margin-top:6px; font-size:15px; font-weight:600; color:#e7eaf0; background:#161c27; border:1px solid #2c3644; padding:12px 22px; border-radius:10px; display:inline-flex; align-items:center; gap:10px;"><span style="width:8px;height:8px;border-radius:50%;background:#4d9fff;box-shadow:0 0 10px #4d9fff;"></span>Run both — watch the contrast</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:22px; align-items:start;">
+
+        <!-- LEFT: Prompting -->
+        <div style="border:1px solid #212a37; border-radius:14px; background:#0d1219; overflow:hidden; display:flex; flex-direction:column;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-bottom:1px solid #1a212c; background:#10151d;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; padding:3px 8px; border-radius:5px; background:rgba(138,147,163,0.12); color:#8a93a3;">2023</span>
+              <span style="font-weight:600; font-size:14.5px;">Prompting</span>
+            </div>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#5f6a7b;">chat</span>
+          </div>
+          <div style="padding:18px 16px; display:flex; flex-direction:column; gap:14px; min-height:360px;">
+            <div style="align-self:flex-end; max-width:86%; background:#1b2331; border:1px solid #263043; border-radius:14px 14px 4px 14px; padding:11px 14px; font-size:14px; line-height:1.45; color:#dfe4ec;">Write a product description under 20 words with no hype words.</div>
+            <div id="leftBody" style="display:contents;"></div>
+          </div>
+          <div style="margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-top:1px solid #1a212c; background:#10151d;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8a93a3;">Human checks: <span id="leftChecks" style="color:#8a93a3; font-weight:600;">0</span></div>
+            <button id="runLeftBtn" class="lp-hover-border" style="cursor:pointer; font-size:13.5px; font-weight:600; color:#dfe4ec; background:#1b2331; border:1px solid #2c3644; padding:8px 16px; border-radius:8px;">Send</button>
+          </div>
+        </div>
+
+        <!-- RIGHT: Loop Engineering -->
+        <div style="border:1px solid #223447; border-radius:14px; background:#080b10; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 0 0 1px rgba(77,159,255,0.05), 0 20px 50px -20px rgba(77,159,255,0.18);">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-bottom:1px solid #14202e; background:#0b1119;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; padding:3px 8px; border-radius:5px; background:rgba(77,159,255,0.14); color:#7bb8ff;">2026</span>
+              <span style="font-weight:600; font-size:14.5px;">Loop Engineering</span>
+            </div>
+            <div style="display:flex; gap:6px;"><span style="width:11px;height:11px;border-radius:50%;background:#ff5d5d;"></span><span style="width:11px;height:11px;border-radius:50%;background:#f4a52a;"></span><span style="width:11px;height:11px;border-radius:50%;background:#3ddc97;"></span></div>
+          </div>
+          <div id="rightTerm" style="padding:16px; min-height:360px; max-height:400px; overflow-y:auto; font-family:'IBM Plex Mono',monospace; font-size:12.5px; line-height:1.7; background:#080b10;">
+            <div style="color:#5f6a7b;">$ loop run --task="desc &lt;20w, no-hype"</div>
+            <div id="rightBody"></div>
+          </div>
+          <div id="rightCaption" style="padding:0 16px 14px; display:none;">
+            <div style="font-size:13px; line-height:1.5; color:#9fe6c4; border-left:2px solid #3ddc97; padding-left:11px;">The system checked its own work and fixed it. <strong style="color:#d5f5e5; font-weight:600;">You just watched.</strong></div>
+          </div>
+          <div style="margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-top:1px solid #14202e; background:#0b1119;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8a93a3;">Human checks: <span style="color:#3ddc97; font-weight:600;">0</span></div>
+            <button id="runRightBtn" class="lp-btn-primary" style="cursor:pointer; font-size:13.5px; font-weight:600; color:#0a0d13; background:#4d9fff; border:none; padding:8px 16px; border-radius:8px;">Run loop</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S2 — ANATOMY ============ -->
+  <section id="s2" style="position:relative; padding:88px 24px 96px; border-top:1px solid #141a24;">
+    <div style="max-width:1160px; margin:0 auto;">
+      <div style="text-align:center; max-width:760px; margin:0 auto 44px;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.14em; color:#4d9fff; text-transform:uppercase; margin-bottom:14px;">02 · Anatomy</div>
+        <h2 style="margin:0 0 12px; font-size:clamp(28px,4vw,44px); font-weight:700; letter-spacing:-0.025em;">Four beats, repeating</h2>
+        <p style="margin:0; font-size:17px; line-height:1.5; color:#a9b2c1;">Every loop you just watched is these four moves on repeat. Click a node.</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:minmax(300px,1fr) minmax(320px,1.05fr); gap:44px; align-items:center;" class="s2-grid">
+        <div style="display:flex; justify-content:center;">
+          <div style="position:relative; width:min(400px,80vw); aspect-ratio:1;">
+            <svg viewBox="0 0 400 400" width="100%" height="100%" style="display:block;">
+              <circle cx="200" cy="200" r="140" fill="none" stroke="#1c2431" stroke-width="2"></circle>
+              <circle id="ringArc" cx="200" cy="200" r="140" fill="none" stroke="#4d9fff" stroke-width="3" stroke-dasharray="6 16" stroke-linecap="round" style="animation:lp-spin 30s linear infinite; transform-origin:center; transition:stroke 0.4s;"></circle>
+              <g id="haltRings" style="display:none;">
+                <circle cx="200" cy="200" r="168" fill="none" stroke="#3ddc97" stroke-width="2" stroke-dasharray="3 9" opacity="0.65" style="animation:lp-spin 40s linear infinite; transform-origin:center;"></circle>
+                <circle cx="200" cy="200" r="112" fill="none" stroke="#ff5d5d" stroke-width="2" stroke-dasharray="3 9" opacity="0.65" style="animation:lp-spin-rev 40s linear infinite; transform-origin:center;"></circle>
+              </g>
+            </svg>
+            <button class="beat-node" data-beat="reason" aria-label="Reason" style="position:absolute; top:calc(50% - 140px); left:50%; transform:translate(-50%,-50%); cursor:pointer; border:none; background:transparent; padding:0;">
+              <span style="display:flex; align-items:center; justify-content:center; border-radius:50%; background:#4d9fff; color:#04101f; font-weight:700; font-size:12px; font-family:'IBM Plex Mono',monospace; transition:all 0.25s;">R</span>
+            </button>
+            <button class="beat-node" data-beat="act" aria-label="Act" style="position:absolute; top:50%; left:calc(50% + 140px); transform:translate(-50%,-50%); cursor:pointer; border:none; background:transparent; padding:0;">
+              <span style="display:flex; align-items:center; justify-content:center; border-radius:50%; background:#f4a52a; color:#2a1a02; font-weight:700; font-size:12px; font-family:'IBM Plex Mono',monospace; transition:all 0.25s;">A</span>
+            </button>
+            <button class="beat-node" data-beat="observe" aria-label="Observe" style="position:absolute; top:calc(50% + 140px); left:50%; transform:translate(-50%,-50%); cursor:pointer; border:none; background:transparent; padding:0;">
+              <span style="display:flex; align-items:center; justify-content:center; border-radius:50%; background:#3ddc97; color:#04241a; font-weight:700; font-size:12px; font-family:'IBM Plex Mono',monospace; transition:all 0.25s;">O</span>
+            </button>
+            <button class="beat-node" data-beat="check" aria-label="Check" style="position:absolute; top:50%; left:calc(50% - 140px); transform:translate(-50%,-50%); cursor:pointer; border:none; background:transparent; padding:0;">
+              <span style="display:flex; align-items:center; justify-content:center; border-radius:50%; background:#ff5d5d; color:#2a0404; font-weight:700; font-size:12px; font-family:'IBM Plex Mono',monospace; transition:all 0.25s;">C</span>
+            </button>
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none;">
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#3b4657; letter-spacing:0.1em;">LOOP</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="border:1px solid #212a37; border-radius:14px; background:#0d1219; padding:26px; min-height:210px;">
+            <div style="display:flex; align-items:center; gap:11px; margin-bottom:14px;">
+              <span id="beatDot" style="width:12px; height:12px; border-radius:50%; background:#4d9fff;"></span>
+              <span id="beatName" style="font-weight:700; font-size:19px; letter-spacing:-0.01em;">Reason</span>
+              <span id="beatIndex" style="margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:11px; color:#5f6a7b;">beat 1 / 4</span>
+            </div>
+            <p id="beatDesc" style="margin:0 0 16px; font-size:15.5px; line-height:1.55; color:#c4ccd8;"></p>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#8a93a3; background:#080b10; border:1px solid #1a212c; border-radius:8px; padding:11px 13px;">
+              <span style="color:#5f6a7b;">from §01 →</span> <span id="beatTrace" style="color:#4d9fff;"></span>
+            </div>
+          </div>
+          <button id="haltBtn" style="cursor:pointer; margin-top:16px; width:100%; font-size:14px; font-weight:600; color:#a9b2c1; background:transparent; border:1px solid #212a37; padding:13px 16px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.2s;">▸ Show the two halt conditions</button>
+          <div id="haltCards" style="margin-top:14px; display:none; grid-template-columns:1fr 1fr; gap:12px;">
+            <div style="border:1px solid rgba(61,220,151,0.32); border-radius:10px; background:rgba(61,220,151,0.06); padding:14px;">
+              <div style="font-weight:600; font-size:13.5px; color:#3ddc97; margin-bottom:5px;">✓ Success stop</div>
+              <div style="font-size:12.5px; line-height:1.45; color:#9fb0aa;">Verifier passes → the goal is met → halt with the answer.</div>
+            </div>
+            <div style="border:1px solid rgba(255,93,93,0.32); border-radius:10px; background:rgba(255,93,93,0.06); padding:14px;">
+              <div style="font-weight:600; font-size:13.5px; color:#ff5d5d; margin-bottom:5px;">⛔ Safety stop</div>
+              <div style="font-size:12.5px; line-height:1.45; color:#c0a5a5;">Max steps hit → give up gracefully → hand back to a human.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S3 — LIVE TERMINAL ============ -->
+  <section id="s3" style="position:relative; padding:88px 24px 96px; border-top:1px solid #141a24; background:linear-gradient(180deg,#0b0f16,#0a0d13);">
+    <div style="max-width:1240px; margin:0 auto;">
+      <div style="text-align:center; max-width:760px; margin:0 auto 40px;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.14em; color:#4d9fff; text-transform:uppercase; margin-bottom:14px;">03 · The live terminal</div>
+        <h2 style="margin:0 0 12px; font-size:clamp(28px,4vw,44px); font-weight:700; letter-spacing:-0.025em;">Drive the loop yourself</h2>
+        <p style="margin:0; font-size:17px; line-height:1.5; color:#a9b2c1;">Pick a task. Step through one cycle at a time, or let it run. Watch the state, tokens, and cost move.</p>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-bottom:16px; padding:14px 16px; border:1px solid #212a37; border-radius:12px; background:#0d1219;">
+        <label style="display:flex; align-items:center; gap:9px; font-size:13px; color:#a9b2c1;">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#5f6a7b; text-transform:uppercase; letter-spacing:0.08em;">task</span>
+          <select id="t3Task" style="font-size:13.5px; color:#e7eaf0; background:#161c27; border:1px solid #2c3644; border-radius:8px; padding:8px 11px; cursor:pointer;">
+            <option value="tests">fix failing tests</option>
+            <option value="guess" selected>guess a number 1–100</option>
+            <option value="haiku">make a haiku exactly 17 syllables</option>
+          </select>
+        </label>
+        <div style="display:flex; gap:8px; margin-left:auto; flex-wrap:wrap;">
+          <button id="t3Step" class="lp-hover-border" style="cursor:pointer; font-size:13.5px; font-weight:600; color:#dfe4ec; background:#161c27; border:1px solid #2c3644; padding:9px 15px; border-radius:8px;">Step</button>
+          <button id="t3Run" class="lp-btn-primary" style="cursor:pointer; font-size:13.5px; font-weight:600; color:#0a0d13; background:#4d9fff; border:none; padding:9px 17px; border-radius:8px;">Run</button>
+          <button id="t3Reset" style="cursor:pointer; font-size:13.5px; font-weight:600; color:#a9b2c1; background:transparent; border:1px solid #2c3644; padding:9px 15px; border-radius:8px;">Reset</button>
+        </div>
+        <label style="display:flex; align-items:center; gap:10px; font-size:12.5px; color:#8a93a3; width:100%; padding-top:4px;">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#5f6a7b; text-transform:uppercase; letter-spacing:0.08em;">speed</span>
+          <input id="t3Speed" type="range" min="1" max="10" step="1" value="6" style="flex:1; max-width:240px; accent-color:#4d9fff; cursor:pointer;">
+          <span id="t3SpeedLabel" style="font-family:'IBM Plex Mono',monospace; color:#a9b2c1;">medium</span>
+        </label>
+      </div>
+
+      <div style="display:grid; grid-template-columns:minmax(0,1.7fr) minmax(240px,1fr); gap:18px; align-items:stretch;" class="s3-grid">
+        <div style="border:1px solid #223447; border-radius:14px; background:#080b10; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 20px 50px -24px rgba(0,0,0,0.8);">
+          <div style="display:flex; align-items:center; gap:10px; padding:11px 15px; border-bottom:1px solid #14202e; background:#0b1119;">
+            <div style="display:flex; gap:6px;"><span style="width:11px;height:11px;border-radius:50%;background:#ff5d5d;"></span><span style="width:11px;height:11px;border-radius:50%;background:#f4a52a;"></span><span style="width:11px;height:11px;border-radius:50%;background:#3ddc97;"></span></div>
+            <span id="t3TaskName" style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#5f6a7b; margin-left:6px;">agent://loop — guess a number 1–100</span>
+            <span id="t3Status" style="margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:11px; padding:3px 9px; border-radius:999px; color:#8a93a3; background:rgba(138,147,163,0.12);">ready</span>
+          </div>
+          <div id="t3Term" style="padding:16px; height:400px; overflow-y:auto; font-family:'IBM Plex Mono',monospace; font-size:12.5px; line-height:1.7;">
+            <div id="t3Prompt" style="color:#5f6a7b;">$ agent solve --task="guess" --verify=on</div>
+            <div id="t3Body"></div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div style="border:1px solid #212a37; border-radius:14px; background:#0d1219; padding:16px;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; color:#5f6a7b; text-transform:uppercase; margin-bottom:12px;">HUD</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div><div id="t3Cycles" style="font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600; color:#4d9fff;">0</div><div style="font-size:11px; color:#8a93a3; margin-top:2px;">cycles</div></div>
+              <div><div id="t3Tokens" style="font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600; color:#e7eaf0;">0</div><div style="font-size:11px; color:#8a93a3; margin-top:2px;">tokens</div></div>
+              <div><div id="t3Cost" style="font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600; color:#3ddc97;">$0.0000</div><div style="font-size:11px; color:#8a93a3; margin-top:2px;">est. cost</div></div>
+              <div><div id="t3Latency" style="font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600; color:#f4a52a;">—</div><div style="font-size:11px; color:#8a93a3; margin-top:2px;">last step</div></div>
+            </div>
+          </div>
+          <div style="flex:1; border:1px solid #212a37; border-radius:14px; background:#0d1219; padding:16px; min-height:200px;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; color:#5f6a7b; text-transform:uppercase; margin-bottom:12px;">STATE · agent memory</div>
+            <div id="t3State" style="display:flex; flex-direction:column; gap:9px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S4 — BREAK IT ============ -->
+  <section id="s4" style="position:relative; padding:88px 24px 96px; border-top:1px solid #141a24;">
+    <div style="max-width:1240px; margin:0 auto;">
+      <div style="text-align:center; max-width:760px; margin:0 auto 40px;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.14em; color:#ff5d5d; text-transform:uppercase; margin-bottom:14px;">04 · Break it</div>
+        <h2 style="margin:0 0 12px; font-size:clamp(28px,4vw,44px); font-weight:700; letter-spacing:-0.025em;">What happens when the check never passes?</h2>
+        <p style="margin:0; font-size:17px; line-height:1.5; color:#a9b2c1;">Break the verifier so it always fails. Then decide whether the safety stop is watching your back.</p>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-bottom:16px; padding:14px 16px; border:1px solid #2a2330; border-radius:12px; background:#120e14;">
+        <button id="t4Break" style="cursor:pointer; display:flex; align-items:center; gap:10px; font-size:13.5px; font-weight:600; color:#e7eaf0; background:#161c27; border:1px solid #2c3644; padding:9px 15px; border-radius:8px; transition:all 0.2s;">
+          <span id="t4BreakDot" style="width:9px; height:9px; border-radius:50%; background:#3b4657; transition:background 0.2s;"></span>Break the verifier: <span id="t4BreakLabel">OFF</span>
+        </button>
+        <button id="t4Safety" style="cursor:pointer; display:flex; align-items:center; gap:10px; font-size:13.5px; font-weight:600; color:#e7eaf0; background:rgba(61,220,151,0.12); border:1px solid #3ddc97; padding:9px 15px; border-radius:8px; transition:all 0.2s;">
+          <span id="t4SafetyDot" style="width:9px; height:9px; border-radius:50%; background:#3ddc97; box-shadow:0 0 8px #3ddc97; transition:all 0.2s;"></span>Safety stop (max 10): <span id="t4SafetyLabel">ON</span>
+        </button>
+        <div style="display:flex; gap:8px; margin-left:auto;">
+          <button id="t4Run" class="lp-btn-primary" style="cursor:pointer; font-size:13.5px; font-weight:600; color:#0a0d13; background:#4d9fff; border:none; padding:9px 17px; border-radius:8px;">Run loop</button>
+          <button id="t4Reset" style="cursor:pointer; font-size:13.5px; font-weight:600; color:#a9b2c1; background:transparent; border:1px solid #2c3644; padding:9px 15px; border-radius:8px;">Reset</button>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:minmax(0,1.7fr) minmax(240px,1fr); gap:18px; align-items:stretch;" class="s3-grid">
+        <div id="t4Shake" style="border:1px solid #223447; border-radius:14px; background:#080b10; overflow:hidden; display:flex; flex-direction:column; transition:border-color 0.3s; box-shadow:0 20px 50px -24px rgba(0,0,0,0.8);">
+          <div style="display:flex; align-items:center; gap:10px; padding:11px 15px; border-bottom:1px solid #14202e; background:#0b1119;">
+            <div style="display:flex; gap:6px;"><span style="width:11px;height:11px;border-radius:50%;background:#ff5d5d;"></span><span style="width:11px;height:11px;border-radius:50%;background:#f4a52a;"></span><span style="width:11px;height:11px;border-radius:50%;background:#3ddc97;"></span></div>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#5f6a7b; margin-left:6px;">agent://loop — guess a number</span>
+            <span id="t4Status" style="margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:11px; padding:3px 9px; border-radius:999px; color:#8a93a3; background:rgba(138,147,163,0.12);">ready</span>
+          </div>
+          <div id="t4Term" style="padding:16px; height:400px; overflow-y:auto; font-family:'IBM Plex Mono',monospace; font-size:12.5px; line-height:1.7;">
+            <div id="t4Prompt" style="color:#5f6a7b;">$ agent solve --task="guess 1-100" --verify=on</div>
+            <div id="t4Body"></div>
+          </div>
+          <div id="t4PlugWrap" style="padding:14px 16px; border-top:1px solid #3a1414; background:rgba(255,93,93,0.07); display:none;">
+            <button id="t4PullPlug" style="cursor:pointer; width:100%; font-size:16px; font-weight:700; letter-spacing:0.04em; color:#fff; background:#e0322f; border:none; padding:15px; border-radius:10px; box-shadow:0 0 24px rgba(224,50,47,0.55); animation:lp-pulse 0.9s ease-in-out infinite;">⛔ PULL THE PLUG</button>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div id="t4CostCard" style="border:1px solid #212a37; border-radius:14px; background:#0d1219; padding:16px; transition:border-color 0.3s;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; color:#5f6a7b; text-transform:uppercase; margin-bottom:12px;">RUNAWAY METER</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div><div id="t4Cycles" style="font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600; color:#4d9fff;">0</div><div style="font-size:11px; color:#8a93a3; margin-top:2px;">cycles</div></div>
+              <div><div id="t4Cost" style="font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600; color:#3ddc97;">$0.0000</div><div style="font-size:11px; color:#8a93a3; margin-top:2px;">cost — climbing</div></div>
+            </div>
+          </div>
+          <div style="flex:1; border:1px solid #212a37; border-radius:14px; background:#0d1219; padding:18px;">
+            <div style="font-weight:600; font-size:14px; color:#e7eaf0; margin-bottom:10px;">The takeaway</div>
+            <p style="margin:0 0 12px; font-size:13px; line-height:1.55; color:#a9b2c1;">A verifier that never passes means the <em style="color:#e7eaf0; font-style:normal;">success stop</em> never fires. Without a <em style="color:#e7eaf0; font-style:normal;">safety stop</em>, the loop just… keeps spending.</p>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.6; color:#8a93a3; border-left:2px solid #ff5d5d; padding-left:11px;">Every loop needs <span style="color:#3ddc97;">two</span> exits:<br>one for success, one for safety.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S5 — BUILD YOUR OWN LOOP ============ -->
+  <section id="s5" style="position:relative; padding:88px 24px 96px; border-top:1px solid #141a24; background:linear-gradient(180deg,#0a0d13,#0b0f16);">
+    <div style="max-width:1240px; margin:0 auto;">
+      <div style="text-align:center; max-width:760px; margin:0 auto 40px;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.14em; color:#4d9fff; text-transform:uppercase; margin-bottom:14px;">05 · Build your own loop</div>
+        <h2 style="margin:0 0 12px; font-size:clamp(28px,4vw,44px); font-weight:700; letter-spacing:-0.025em;">The Blueprint Builder</h2>
+        <p style="margin:0; font-size:17px; line-height:1.5; color:#a9b2c1;">Fill in six fields. Your verifier rule actually gates the run. Then take the prompt anywhere.</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(320px,1fr); gap:22px; align-items:start;" class="s5-grid">
+        <div style="border:1px solid #212a37; border-radius:14px; background:#0d1219; padding:22px; display:flex; flex-direction:column; gap:18px;">
+          <div>
+            <label style="display:block; font-size:13px; font-weight:600; color:#e7eaf0; margin-bottom:6px;"><span style="color:#4d9fff;">1 · Goal</span> <span style="font-weight:400; color:#5f6a7b;">— must be checkable</span></label>
+            <input id="bpGoal" type="text" placeholder="e.g. find a number between 1 and 100" style="width:100%; font-size:14px; color:#e7eaf0; background:#080b10; border:1px solid #2c3644; border-radius:8px; padding:11px 12px;">
+            <div id="bpGoalHint" style="display:none; margin-top:7px; font-size:12px; line-height:1.45; color:#f4a52a;">Hint: a checkable goal names a number or a condition the loop can test — e.g. "under 20 words", "== target", "all tests pass".</div>
+          </div>
+          <div>
+            <label style="display:block; font-size:13px; font-weight:600; color:#f4a52a; margin-bottom:6px;">2 · Act <span style="font-weight:400; color:#5f6a7b;">— what to do each cycle</span></label>
+            <input id="bpAct" type="text" placeholder="e.g. make a guess in the range" style="width:100%; font-size:14px; color:#e7eaf0; background:#080b10; border:1px solid #2c3644; border-radius:8px; padding:11px 12px;">
+          </div>
+          <div>
+            <label style="display:block; font-size:13px; font-weight:600; color:#3ddc97; margin-bottom:6px;">3 · Observe <span style="font-weight:400; color:#5f6a7b;">— what to read back</span></label>
+            <input id="bpObserve" type="text" placeholder="e.g. higher / lower feedback" style="width:100%; font-size:14px; color:#e7eaf0; background:#080b10; border:1px solid #2c3644; border-radius:8px; padding:11px 12px;">
+          </div>
+          <div>
+            <label style="display:block; font-size:13px; font-weight:600; color:#ff5d5d; margin-bottom:6px;">4 · Verifier rule <span style="font-weight:400; color:#5f6a7b;">— the pass/fail test</span></label>
+            <input id="bpVerifier" type="text" placeholder="e.g. guess == target" style="width:100%; font-family:'IBM Plex Mono',monospace; font-size:13.5px; color:#e7eaf0; background:#080b10; border:1px solid #2c3644; border-radius:8px; padding:11px 12px;">
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div>
+              <label style="display:block; font-size:13px; font-weight:600; color:#e7eaf0; margin-bottom:6px;">5 · Max steps</label>
+              <input id="bpMax" type="number" min="1" max="50" value="6" style="width:100%; font-family:'IBM Plex Mono',monospace; font-size:14px; color:#e7eaf0; background:#080b10; border:1px solid #2c3644; border-radius:8px; padding:11px 12px;">
+            </div>
+            <div>
+              <label style="display:block; font-size:13px; font-weight:600; color:#e7eaf0; margin-bottom:6px;">6 · Human gate</label>
+              <select id="bpGate" style="width:100%; font-size:13.5px; color:#e7eaf0; background:#080b10; border:1px solid #2c3644; border-radius:8px; padding:11px 12px; cursor:pointer;">
+                <option value="none">no gate — full auto</option>
+                <option value="onstop" selected>ask a human on safety stop</option>
+                <option value="everystep">approve every step</option>
+              </select>
+            </div>
+          </div>
+          <button id="bpRun" class="lp-btn-primary" style="cursor:pointer; font-size:15px; font-weight:600; color:#0a0d13; background:#4d9fff; border:none; padding:14px; border-radius:10px;">Run my loop ▸</button>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div style="border:1px solid #223447; border-radius:14px; background:#080b10; overflow:hidden;">
+            <div style="display:flex; align-items:center; gap:10px; padding:11px 15px; border-bottom:1px solid #14202e; background:#0b1119;">
+              <span style="width:9px;height:9px;border-radius:50%;background:#4d9fff;"></span>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8a93a3;">your-loop.log</span>
+              <span id="bpStatus" style="margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:11px; color:#5f6a7b;">idle</span>
+            </div>
+            <div id="bpTerm" style="padding:16px; height:280px; overflow-y:auto; font-family:'IBM Plex Mono',monospace; font-size:12.5px; line-height:1.7;">
+              <div id="bpBody"></div>
+            </div>
+          </div>
+
+          <div style="border:1px solid #212a37; border-radius:14px; background:linear-gradient(160deg,#111826,#0c111a); padding:20px; position:relative; overflow:hidden;">
+            <div style="position:absolute; top:-30px; right:-30px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle,rgba(77,159,255,0.14),transparent 70%);"></div>
+            <div style="display:flex; align-items:center; gap:9px; margin-bottom:14px;">
+              <svg width="18" height="18" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="6" r="4" fill="#4d9fff"></circle><circle cx="34" cy="20" r="4" fill="#f4a52a"></circle><circle cx="20" cy="34" r="4" fill="#3ddc97"></circle><circle cx="6" cy="20" r="4" fill="#ff5d5d"></circle></svg>
+              <span style="font-weight:700; font-size:14px;">Loop Card</span>
+              <span style="margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#5f6a7b;">your design</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:12.5px; line-height:1.5;">
+              <div style="display:flex; gap:8px;"><span style="color:#4d9fff; flex:0 0 74px;">Goal</span><span id="cardGoal" style="color:#dfe4ec;">—</span></div>
+              <div style="display:flex; gap:8px;"><span style="color:#f4a52a; flex:0 0 74px;">Act</span><span id="cardAct" style="color:#dfe4ec;">—</span></div>
+              <div style="display:flex; gap:8px;"><span style="color:#3ddc97; flex:0 0 74px;">Observe</span><span id="cardObserve" style="color:#dfe4ec;">—</span></div>
+              <div style="display:flex; gap:8px;"><span style="color:#ff5d5d; flex:0 0 74px;">Verify</span><span id="cardVerifier" style="color:#dfe4ec; font-family:'IBM Plex Mono',monospace;">—</span></div>
+              <div style="display:flex; gap:8px;"><span style="color:#8a93a3; flex:0 0 74px;">Stops</span><span style="color:#dfe4ec;">verified · or <span id="cardMax">6</span> steps → <span id="cardGate">ask a human</span></span></div>
+            </div>
+            <button id="bpCopy" class="lp-hover-border" style="cursor:pointer; margin-top:16px; width:100%; font-size:13.5px; font-weight:600; color:#dfe4ec; background:#161c27; border:1px solid #2c3644; padding:11px; border-radius:9px;">Copy as prompt</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S6 — GO REAL ============ -->
+  <section id="s6" style="position:relative; padding:80px 24px 40px; border-top:1px solid #141a24;">
+    <div style="max-width:840px; margin:0 auto;">
+      <div style="border:1px solid #212a37; border-radius:14px; background:#0d1219; overflow:hidden;">
+        <button id="s6Toggle" style="cursor:pointer; width:100%; display:flex; align-items:center; gap:14px; padding:20px 22px; background:transparent; border:none; text-align:left;">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#5f6a7b; text-transform:uppercase; letter-spacing:0.12em;">06 · optional</span>
+          <span style="font-weight:600; font-size:17px; color:#e7eaf0;">Run this on a real AI</span>
+          <span id="s6Chevron" style="margin-left:auto; font-size:20px; color:#5f6a7b; transform:rotate(0deg); transition:transform 0.25s;">›</span>
+        </button>
+        <div id="s6Panel" style="padding:0 22px 24px; display:none;">
+          <p style="margin:0 0 18px; font-size:14.5px; line-height:1.6; color:#a9b2c1;">Everything above runs on scripted simulations — <strong style="color:#e7eaf0;">no key needed</strong>. To drive §03 and §05 with a live model instead, paste a free-tier API key (Groq or Google Gemini both offer one). The key lives only in this tab's memory, is sent only to the provider you choose, and is never stored or transmitted anywhere else.</p>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
+            <div>
+              <label style="display:block; font-size:12.5px; font-weight:600; color:#e7eaf0; margin-bottom:6px;">Provider</label>
+              <select id="s6Provider" style="width:100%; font-size:13.5px; color:#e7eaf0; background:#080b10; border:1px solid #2c3644; border-radius:8px; padding:11px 12px; cursor:pointer;">
+                <option value="groq">Groq (free tier)</option>
+                <option value="gemini">Google Gemini (free tier)</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block; font-size:12.5px; font-weight:600; color:#e7eaf0; margin-bottom:6px;">Model name <span style="font-weight:400; color:#5f6a7b;">— editable</span></label>
+              <input id="s6Model" type="text" placeholder="type the exact model id" style="width:100%; font-family:'IBM Plex Mono',monospace; font-size:13px; color:#e7eaf0; background:#080b10; border:1px solid #2c3644; border-radius:8px; padding:11px 12px;">
+            </div>
+          </div>
+          <label style="display:block; font-size:12.5px; font-weight:600; color:#e7eaf0; margin-bottom:6px;">API key <span style="font-weight:400; color:#5f6a7b;">— in-memory only</span></label>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <input id="s6Key" type="password" placeholder="paste key — never stored" autocomplete="off" style="flex:1; min-width:200px; font-family:'IBM Plex Mono',monospace; font-size:13px; color:#e7eaf0; background:#080b10; border:1px solid #2c3644; border-radius:8px; padding:11px 12px;">
+            <button id="s6Clear" style="cursor:pointer; font-size:13px; font-weight:600; color:#a9b2c1; background:transparent; border:1px solid #2c3644; padding:11px 16px; border-radius:8px;">Clear</button>
+          </div>
+          <div style="margin-top:14px; display:flex; align-items:center; gap:9px; font-family:'IBM Plex Mono',monospace; font-size:12px; color:#5f6a7b;" id="s6StatusRow">
+            <span id="s6StatusDot" style="width:8px; height:8px; border-radius:50%; background:#5f6a7b;"></span><span id="s6StatusText">No key set — everything above runs in simulation.</span>
+          </div>
+          <div style="margin-top:16px; font-size:12px; line-height:1.55; color:#6b7484; border:1px solid #1c2431; border-radius:8px; padding:12px 14px; background:#080b10;">
+            <strong style="color:#8a93a3;">Honest disclaimer.</strong> This is a client-side demo. Your key is held in a JavaScript variable for this page only — refresh and it's gone. Free tiers change their limits and model ids often, which is why the model name is a field you type, not a guess we bake in. Never paste a production or paid key into any browser demo.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ S7 — WHERE NEXT ============ -->
+  <section id="s7" style="position:relative; padding:60px 24px 100px;">
+    <div style="max-width:1160px; margin:0 auto;">
+      <div style="text-align:center; max-width:760px; margin:0 auto 40px;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.14em; color:#4d9fff; text-transform:uppercase; margin-bottom:14px;">07 · Where next</div>
+        <h2 style="margin:0 0 12px; font-size:clamp(26px,3.6vw,40px); font-weight:700; letter-spacing:-0.025em;">Three things to carry with you</h2>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px;">
+        <div style="border:1px solid #212a37; border-radius:14px; background:#0d1219; padding:24px;">
+          <div style="display:flex; gap:6px; margin-bottom:16px;"><span style="width:13px;height:13px;border-radius:50%;background:#4d9fff;"></span><span style="width:13px;height:13px;border-radius:50%;background:#f4a52a;"></span><span style="width:13px;height:13px;border-radius:50%;background:#3ddc97;"></span><span style="width:13px;height:13px;border-radius:50%;background:#ff5d5d;"></span></div>
+          <div style="font-weight:700; font-size:16px; margin-bottom:8px;">The four beats</div>
+          <p style="margin:0; font-size:13.5px; line-height:1.55; color:#a9b2c1;"><span style="color:#4d9fff;">Reason</span> → <span style="color:#f4a52a;">Act</span> → <span style="color:#3ddc97;">Observe</span> → <span style="color:#ff5d5d;">Check</span>, on repeat. That cycle is the whole engine of an agent.</p>
+        </div>
+        <div style="border:1px solid #212a37; border-radius:14px; background:#0d1219; padding:24px;">
+          <div style="display:flex; gap:8px; margin-bottom:16px; font-size:20px;"><span style="color:#3ddc97;">✓</span><span style="color:#ff5d5d;">⛔</span></div>
+          <div style="font-weight:700; font-size:16px; margin-bottom:8px;">Two ways to stop</div>
+          <p style="margin:0; font-size:13.5px; line-height:1.55; color:#a9b2c1;">A <span style="color:#3ddc97;">success stop</span> when the verifier passes, and a <span style="color:#ff5d5d;">safety stop</span> when steps run out. Never ship a loop with only one.</p>
+        </div>
+        <div style="border:1px solid #212a37; border-radius:14px; background:#0d1219; padding:24px;">
+          <div style="margin-bottom:16px; font-size:22px;">🎯</div>
+          <div style="font-weight:700; font-size:16px; margin-bottom:8px;">The verifier steers</div>
+          <p style="margin:0; font-size:13.5px; line-height:1.55; color:#a9b2c1;">Your check is the steering wheel. A sharp, testable verifier is what turns a chatbot into a system that gets things right.</p>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:44px;">
+        <p style="margin:0 0 20px; font-size:16px; color:#a9b2c1;">You can now explain loop engineering to someone else. That's the whole point.</p>
+        <button id="restartBtn" class="lp-hover-border" style="cursor:pointer; font-size:15px; font-weight:600; color:#e7eaf0; background:#161c27; border:1px solid #2c3644; padding:13px 24px; border-radius:11px;">↺ Restart the journey</button>
+        <div style="margin-top:40px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#3b4657;">reason → act → observe → check · a loop engineering playground</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
