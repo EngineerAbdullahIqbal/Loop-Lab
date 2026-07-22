@@ -10,7 +10,7 @@ export function el<K extends keyof HTMLElementTagNameMap>(
   return node;
 }
 
-/** A titled lesson section shell with the mono eyebrow number. */
+/** A titled lesson section shell: giant ghost numeral + mono eyebrow. */
 export function section(
   id: string,
   num: string,
@@ -19,6 +19,7 @@ export function section(
   hook: string,
 ): { root: HTMLElement; body: HTMLElement } {
   const root = el("section", { id, class: "lesson" });
+  root.appendChild(el("div", { class: "ghost-num", "aria-hidden": "true" }, num));
   const lead = el("div", { class: "lead" });
   lead.appendChild(el("div", { class: "eyebrow mono" }, `${num} · ${title}`));
   lead.appendChild(el("h2", {}, concept));

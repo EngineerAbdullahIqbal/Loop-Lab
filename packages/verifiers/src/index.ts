@@ -6,6 +6,7 @@ export {
   DEFAULT_HYPE_WORDS,
   matches,
   equals,
+  contains,
   numberInRange,
   uniqueItems,
   isCheckableGoal,

@@ -65,6 +65,13 @@ export function equals(target: string): Verifier<string> {
   return (input) => (input.trim() === target ? PASS : fail(`${input.trim()} ≠ ${target}`));
 }
 
+/** Passes when the candidate contains `substr` (case-insensitive). */
+export function contains(substr: string): Verifier<string> {
+  const needle = substr.toLowerCase();
+  return (input) =>
+    input.toLowerCase().includes(needle) ? PASS : fail(`missing "${substr}"`);
+}
+
 /** Passes when a number is within [min, max] inclusive. */
 export function numberInRange(min: number, max: number): Verifier<number> {
   return (input) =>

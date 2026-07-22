@@ -8,6 +8,8 @@ import { renderFixTheGoal } from "./activities/fix-the-goal.ts";
 import { renderRunaway } from "./activities/runaway.ts";
 import { renderBuilder } from "./activities/builder.ts";
 import { renderAgentStudio } from "./activities/agent-studio.ts";
+import { renderGallery } from "./gallery.ts";
+import { LOOP_EXAMPLES } from "@loop-lab/lessons";
 
 /** Maps a lesson's activity type to its renderer. New activity = new entry. */
 const RENDERERS: Partial<Record<ActivityType, (lesson: Lesson, mount: HTMLElement) => void>> = {
@@ -80,11 +82,27 @@ function render(): void {
   hc.appendChild(el("div", { class: "hero-eyebrow mono" }, t("app.hero.eyebrow")));
   hc.appendChild(el("h1", {}, t("app.hero.title")));
   hc.appendChild(el("p", { class: "sub" }, t("app.hero.sub")));
-  hc.appendChild(el("a", { href: `#${lessons[0]?.id ?? "top"}`, class: "btn primary lg" }, t("app.hero.cta")));
+  const beatChips = el("div", { class: "beat-chips", "aria-hidden": "true" }, `
+    <span class="bchip" style="--c:#4d9fff">Reason</span>
+    <span class="bchip" style="--c:#f4a52a">Act</span>
+    <span class="bchip" style="--c:#3ddc97">Observe</span>
+    <span class="bchip" style="--c:#ff5d5d">Check</span>`);
+  hc.appendChild(beatChips);
+  const ctaRow = el("div", { class: "cta-row" });
+  ctaRow.appendChild(el("a", { href: `#${lessons[0]?.id ?? "top"}`, class: "btn primary lg" }, t("app.hero.cta")));
+  ctaRow.appendChild(el("a", { href: "#gallery", class: "btn ghost lg" }, t("gallery.eyebrow") + " ↓"));
+  hc.appendChild(ctaRow);
   hc.appendChild(el("div", { class: "hero-note mono" }, t("app.hero.note")));
   hero.appendChild(hc);
   hero.appendChild(el("div", { class: "scroll-cue mono", "aria-hidden": "true" }, "SCROLL ↓"));
   app.appendChild(hero);
+
+  // --- marquee ticker of real loop names ---------------------------------
+  const names = LOOP_EXAMPLES.map((e) => `${e.icon} ${e.title}`);
+  const item = names.map((n) => `<span class="mq-item mono">${n}<span class="mq-dot"></span></span>`).join("");
+  const marquee = el("div", { class: "marquee", "aria-hidden": "true" });
+  marquee.appendChild(el("div", { class: "mq-track" }, item + item));
+  app.appendChild(marquee);
 
   // --- lessons -----------------------------------------------------------
   const main = el("main");
@@ -97,6 +115,8 @@ function render(): void {
     root.appendChild(checkpoint(s.checkpoint, s.youLearned));
     main.appendChild(root);
   }
+  // --- the Loop Gallery (researched real-world examples) -----------------
+  main.appendChild(renderGallery());
   app.appendChild(main);
 
   // --- footer ------------------------------------------------------------

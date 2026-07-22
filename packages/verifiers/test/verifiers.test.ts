@@ -5,6 +5,7 @@ import {
   wordCountAtMost,
   noHypeWords,
   matches,
+  contains,
   numberInRange,
   uniqueItems,
   isCheckableGoal,
@@ -50,6 +51,15 @@ test("matches enforces a pattern", () => {
   const bad = v("July 22");
   assert.equal(bad.pass, false);
   assert.match(bad.reasons[0] ?? "", /ISO date/);
+});
+
+// --- contains ------------------------------------------------------------
+test("contains is case-insensitive and reports the missing needle", () => {
+  const v = contains("0 failed");
+  assert.equal(v("suite: 0 FAILED · 12 passed").pass, true);
+  const r = v("suite: 2 failed · 10 passed");
+  assert.equal(r.pass, false);
+  assert.match(r.reasons[0] ?? "", /0 failed/);
 });
 
 // --- numberInRange: boundary ---------------------------------------------

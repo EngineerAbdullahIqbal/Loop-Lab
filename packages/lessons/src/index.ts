@@ -18,3 +18,5 @@ export {
   type ResolvedLessonStrings,
 } from "./loader.ts";
 export { getVerifier, hasVerifier, registerVerifier } from "./verifier-registry.ts";
+export { LOOP_EXAMPLES, EXAMPLE_CATEGORIES, resolveVerifierSpec } from "./examples.ts";
+export type { LoopExample, ExampleCategory, VerifierSpec } from "./examples.ts";

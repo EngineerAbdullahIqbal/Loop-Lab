@@ -140,4 +140,17 @@ export const en: Catalog = {
   "l06.sched.list": "Scheduled agents",
   "l06.sched.cancel": "Cancel",
   "l06.sched.none": "Nothing scheduled yet.",
+
+  // --- Loop Gallery ------------------------------------------------------
+  "gallery.eyebrow": "The Loop Gallery",
+  "gallery.title": "Loops people actually run",
+  "gallery.sub": "Eight real loop-engineering patterns — from the canonical test-fix loop to the chai on your stove. Press play and watch each one steer itself.",
+  "gallery.watch": "▶ Watch it run",
+  "gallery.running": "Running…",
+  "gallery.again": "↺ Run again",
+  "gallery.goal": "Goal",
+  "gallery.stops": "Stops",
+  "gallery.gate": "Human gate",
+  "gallery.or": "or",
+  "gallery.note": "Every trace replays through the real loop runner with a real verifier — labeled Simulation, honestly.",
 };
