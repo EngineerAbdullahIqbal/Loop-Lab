@@ -23,6 +23,27 @@ function num(n: number): string {
   return String(n).padStart(2, "0");
 }
 
+/** Dark/light toggle. Persists the choice; icon shows the theme you'll switch TO. */
+function themeToggle(): HTMLButtonElement {
+  const btn = el("button", { class: "theme-toggle", "aria-label": "Toggle dark / light theme", title: "Toggle theme" }) as HTMLButtonElement;
+  const paint = () => {
+    const dark = document.documentElement.getAttribute("data-theme") !== "light";
+    btn.textContent = dark ? "☀️" : "🌙";
+  };
+  btn.addEventListener("click", () => {
+    const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", next);
+    try {
+      localStorage.setItem("loop-lab-theme", next);
+    } catch {
+      /* storage blocked — theme still applies for this session */
+    }
+    paint();
+  });
+  paint();
+  return btn;
+}
+
 function render(): void {
   const app = document.getElementById("app");
   if (!app) return;
@@ -37,7 +58,8 @@ function render(): void {
     nav.appendChild(a);
   }
   header.appendChild(nav);
-  header.appendChild(el("div", { class: "badge" }, `<span class="dot"></span>${t("app.simulationBadge")}`));
+  header.appendChild(themeToggle());
+  header.appendChild(el("div", { class: "badge" }, `<span class="dot"></span><span>${t("app.simulationBadge")}</span>`));
   app.appendChild(header);
 
   // --- hero (with animated orbital graphic) -----------------------------
