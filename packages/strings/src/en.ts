@@ -138,7 +138,7 @@ export const en: Catalog = {
   "l06.sched.need": "Scheduling needs the local agent-runner backend running.",
   "l06.sched.checking": "Looking for the agent-runner…",
   "l06.sched.offline": "Runs in the browser now. To schedule timed runs, start the optional agent-runner backend (see README) — then this connects automatically.",
-  "l06.sched.nosched": "Backend connected, but scheduling isn't installed (pip install apscheduler).",
+  "l06.sched.nosched": "Backend connected ✓ — but scheduled runs need a persistent server (not available on this host). Run the agent-runner locally for scheduling.",
   "l06.sched.ready": "Agent-runner connected ✓ — pick a time and schedule.",
   "l06.sched.ok": "Scheduled ✓ — cron",
   "l06.sched.list": "Scheduled agents",

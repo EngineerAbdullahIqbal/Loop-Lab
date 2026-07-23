@@ -14,10 +14,12 @@ interface StudioBody {
 
 /** L6 — Agent Studio: fill placeholders → watch a real Groq agent run your loop. */
 export function renderAgentStudio(lesson: Lesson, mount: HTMLElement): void {
+  // VITE_AGENT_API (baked in at build) points at a deployed agent-runner, e.g.
+  // a Vercel URL. Empty/unset falls back to localhost (dev), which simply
+  // degrades to browser-only + "offline" scheduling on the live static site.
+  const envApi = (import.meta as { env?: Record<string, string> }).env?.VITE_AGENT_API;
   const apiBase = String(
-    (import.meta as { env?: Record<string, string> }).env?.VITE_AGENT_API ??
-      lesson.activity.config.apiDefault ??
-      "http://localhost:8787",
+    (envApi && envApi.trim()) || lesson.activity.config.apiDefault || "http://localhost:8787",
   );
 
   const grid = el("div", { class: "split" });

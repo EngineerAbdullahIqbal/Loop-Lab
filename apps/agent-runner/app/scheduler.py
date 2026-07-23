@@ -6,6 +6,7 @@ Each firing runs the loop headless (capped) and stores the last trace in memory.
 
 from __future__ import annotations
 
+import os
 import uuid
 from typing import Any, Optional
 
@@ -16,14 +17,19 @@ except Exception:  # pragma: no cover - import guard
     AsyncIOScheduler = None  # type: ignore[assignment]
     CronTrigger = None  # type: ignore[assignment]
 
+# Serverless platforms (Vercel, Lambda) run ephemeral functions — an in-memory
+# scheduler can't persist between invocations, so cron scheduling is genuinely
+# unavailable there no matter what's installed. Report that honestly.
+_SERVERLESS = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
+
 
 class SchedulerUnavailable(Exception):
     pass
 
 
 def available() -> bool:
-    """True when APScheduler is installed and cron scheduling can run."""
-    return AsyncIOScheduler is not None
+    """True only when cron scheduling can actually run (installed + persistent)."""
+    return AsyncIOScheduler is not None and not _SERVERLESS
 
 
 _scheduler: Optional[Any] = None
@@ -33,8 +39,10 @@ _traces: dict[str, list[dict[str, Any]]] = {}
 
 def _ensure() -> Any:
     global _scheduler
-    if AsyncIOScheduler is None:
-        raise SchedulerUnavailable("apscheduler not installed — scheduling disabled")
+    if not available():
+        raise SchedulerUnavailable(
+            "scheduling needs a persistent server (unavailable on serverless / apscheduler missing)"
+        )
     if _scheduler is None:
         _scheduler = AsyncIOScheduler()
         _scheduler.start()

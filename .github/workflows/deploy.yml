@@ -27,7 +27,11 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Set repo variable AGENT_API_URL to your deployed agent-runner (e.g. the
+      # Vercel URL) to connect real platform-key AI. Empty = browser-only + local.
       - run: pnpm build
+        env:
+          VITE_AGENT_API: ${{ vars.AGENT_API_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/web/dist
