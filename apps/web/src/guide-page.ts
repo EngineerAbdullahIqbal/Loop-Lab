@@ -58,7 +58,8 @@ export function renderGuidePage(app: HTMLElement, themeToggle: () => HTMLButtonE
   const header = el("header");
   header.appendChild(el("div", { class: "brand" }, `◉ ${t("app.name")}`));
   const nav = el("nav", { class: "nav" });
-  nav.appendChild(el("a", { href: "#top", class: "nav-link on" }, t("guide.navLink")));
+  nav.appendChild(el("a", { href: "#/guide", class: "nav-link on" }, t("guide.navLink")));
+  nav.appendChild(el("a", { href: "#/deck", class: "nav-link" }, t("deck.navLink")));
   // carries .guide-link so it stays visible in the collapsed mobile nav
   nav.appendChild(el("a", { href: "#/", class: "nav-link guide-link" }, t("guide.backLink")));
   header.appendChild(nav);
@@ -80,8 +81,9 @@ export function renderGuidePage(app: HTMLElement, themeToggle: () => HTMLButtonE
   sidebar.appendChild(el("div", { class: "g-side-h mono" }, t("guide.contents")));
   const toc = el("nav", { class: "g-toc" });
   for (const sec of GUIDE) {
+    // routed hash (#/guide/<id>) so the router keeps the guide view mounted
     toc.appendChild(
-      el("a", { href: `#g-${sec.id}`, class: "g-toc-link", "data-sec": sec.id },
+      el("a", { href: `#/guide/${sec.id}`, class: "g-toc-link", "data-sec": sec.id },
         `<span class="mono g-toc-num">${String(sec.part).padStart(2, "0")}</span> ${sec.title}`),
     );
   }

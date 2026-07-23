@@ -2,6 +2,7 @@ import type { LoopConfig, ScriptStep } from "@loop-lab/loop-core";
 import { simulationSource } from "@loop-lab/loop-core";
 import { hasKey, t, type Locale } from "@loop-lab/strings";
 import { getVerifier, hasVerifier } from "./verifier-registry.ts";
+import { GUIDE } from "./guide.ts";
 import { LESSONS } from "./lessons.ts";
 import { REQUIRED_STRING_SUFFIXES, type Lesson } from "./types.ts";
 
@@ -64,6 +65,9 @@ export function validateLesson(lesson: Lesson): string[] {
   }
   if (lesson.verifierRef && !hasVerifier(lesson.verifierRef)) {
     problems.push(`unknown verifierRef: ${lesson.verifierRef}`);
+  }
+  if (lesson.guideRef && !GUIDE.some((g) => g.id === lesson.guideRef)) {
+    problems.push(`unknown guideRef: ${lesson.guideRef}`);
   }
   if (lesson.activity.type === "split-screen") {
     const script = lesson.activity.config.simScript;

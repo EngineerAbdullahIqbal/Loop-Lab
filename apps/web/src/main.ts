@@ -10,7 +10,8 @@ import { renderBuilder } from "./activities/builder.ts";
 import { renderAgentStudio } from "./activities/agent-studio.ts";
 import { renderGallery } from "./gallery.ts";
 import { renderGuidePage } from "./guide-page.ts";
-import { LOOP_EXAMPLES } from "@loop-lab/lessons";
+import { renderDeckPage } from "./deck-page.ts";
+import { GUIDE, LOOP_EXAMPLES } from "@loop-lab/lessons";
 
 /** Maps a lesson's activity type to its renderer. New activity = new entry. */
 const RENDERERS: Partial<Record<ActivityType, (lesson: Lesson, mount: HTMLElement) => void>> = {
@@ -59,6 +60,7 @@ function renderPlayground(app: HTMLElement): void {
     nav.appendChild(a);
   }
   nav.appendChild(el("a", { href: "#/guide", class: "nav-link guide-link" }, t("guide.navLink")));
+  nav.appendChild(el("a", { href: "#/deck", class: "nav-link guide-link" }, t("deck.navLink")));
   header.appendChild(nav);
   header.appendChild(themeToggle());
   header.appendChild(el("div", { class: "badge" }, `<span class="dot"></span><span>${t("app.simulationBadge")}</span>`));
@@ -113,6 +115,16 @@ function renderPlayground(app: HTMLElement): void {
     if (renderer) renderer(lesson, body);
     else body.appendChild(el("div", { class: "note" }, `(activity "${lesson.activity.type}" coming soon)`));
     root.appendChild(checkpoint(s.checkpoint, s.youLearned));
+    // deep link into the matching theory part of the Guide
+    if (lesson.guideRef) {
+      const part = GUIDE.find((g) => g.id === lesson.guideRef);
+      if (part) {
+        root.appendChild(
+          el("a", { href: `#/guide/${part.id}`, class: "theory-link" },
+            `📖 ${t("guide.readTheory")}: <b>${t("guide.partLabel")} ${part.part} — ${part.title}</b> →`),
+        );
+      }
+    }
     main.appendChild(root);
   }
   // --- the Loop Gallery (researched real-world examples) -----------------
@@ -165,20 +177,41 @@ function setupReveal(): void {
   targets.forEach((t) => io.observe(t));
 }
 
-// --- hash router: "#/guide" → Guide page, anything else → playground -------
-const isGuideHash = () => location.hash.startsWith("#/guide");
-let currentView: "guide" | "playground" | null = null;
+// --- hash router: "#/guide[/<sec>]" | "#/deck" | else → playground ---------
+type View = "guide" | "deck" | "playground";
+const viewOf = (): View =>
+  location.hash.startsWith("#/guide") ? "guide" : location.hash.startsWith("#/deck") ? "deck" : "playground";
+
+function scrollToGuideSection(): void {
+  const m = location.hash.match(/^#\/guide\/(.+)$/);
+  if (!m) return;
+  document.getElementById(`g-${m[1]}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+let currentView: View | null = null;
+let viewCleanup: (() => void) | null = null;
 
 function route(): void {
   const app = document.getElementById("app");
   if (!app) return;
-  const view = isGuideHash() ? "guide" : "playground";
-  if (view === currentView) return; // plain anchor jump — no re-render
+  const view = viewOf();
+  if (view === currentView) {
+    if (view === "guide") scrollToGuideSection(); // in-guide section jump
+    return; // plain anchor jump — no re-render
+  }
+  viewCleanup?.();
+  viewCleanup = null;
   currentView = view;
   app.innerHTML = "";
   window.scrollTo(0, 0);
-  if (view === "guide") renderGuidePage(app, themeToggle);
-  else renderPlayground(app);
+  if (view === "guide") {
+    renderGuidePage(app, themeToggle);
+    scrollToGuideSection();
+  } else if (view === "deck") {
+    viewCleanup = renderDeckPage(app, themeToggle).cleanup;
+  } else {
+    renderPlayground(app);
+  }
 }
 
 window.addEventListener("hashchange", route);

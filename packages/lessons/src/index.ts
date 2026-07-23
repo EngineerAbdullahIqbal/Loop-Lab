@@ -22,3 +22,5 @@ export { LOOP_EXAMPLES, EXAMPLE_CATEGORIES, resolveVerifierSpec } from "./exampl
 export type { LoopExample, ExampleCategory, VerifierSpec } from "./examples.ts";
 export { GUIDE } from "./guide.ts";
 export type { GuideSection, GuideBlock } from "./guide.ts";
+export { DECK } from "./deck.ts";
+export type { DeckSlide, SlideLayout, SlideItem } from "./deck.ts";

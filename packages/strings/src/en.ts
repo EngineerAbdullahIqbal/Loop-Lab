@@ -164,5 +164,15 @@ export const en: Catalog = {
   "guide.teachIt": "Teach-It Box",
   "guide.partLabel": "Part",
   "guide.openPlayground": "Try it in the playground ↗",
+  "guide.readTheory": "Read the theory",
   "guide.footer": "Read it. Play it. Teach it — that's the whole point.",
+
+  // --- Deck (10-slide presentation) --------------------------------------
+  "deck.navLink": "🎞 Deck",
+  "deck.hint": "Use ← → keys, or tap the arrows",
+  "deck.prev": "‹",
+  "deck.next": "›",
+  "deck.of": "of",
+  "deck.openPlayground": "Open the playground ▸",
+  "deck.openGuide": "Read the full guide ▸",
 };

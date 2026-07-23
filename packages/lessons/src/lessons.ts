@@ -7,6 +7,7 @@ import type { Lesson } from "./types.ts";
  */
 export const L1: Lesson = {
   id: "l01-prompt-vs-loop",
+  guideRef: "big-idea",
   order: 1,
   conceptId: "prompt-vs-loop",
   strings: "l01",
@@ -33,6 +34,7 @@ export const L1: Lesson = {
 /** L2 — The Four Beats. A static explorer of reason/act/observe/check. */
 export const L2: Lesson = {
   id: "l02-four-beats",
+  guideRef: "anatomy",
   order: 2,
   conceptId: "four-beats",
   strings: "l02",
@@ -45,6 +47,7 @@ export const L2: Lesson = {
 /** L3 — The Verifier. A "fix the vague goal" activity gated by a checkability linter. */
 export const L3: Lesson = {
   id: "l03-verifier",
+  guideRef: "first-loop",
   order: 3,
   conceptId: "verifier",
   strings: "l03",
@@ -60,6 +63,7 @@ export const L3: Lesson = {
 /** L4 — Two Exits. The runaway-loop demo with breakable verifier + safety stop. */
 export const L4: Lesson = {
   id: "l04-two-exits",
+  guideRef: "anti-patterns",
   order: 4,
   conceptId: "two-exits",
   strings: "l04",
@@ -72,6 +76,7 @@ export const L4: Lesson = {
 /** L5 — Build your own loop. The blueprint builder (capstone-lite). */
 export const L5: Lesson = {
   id: "l05-build-your-own",
+  guideRef: "roadmap",
   order: 5,
   conceptId: "build-your-own",
   strings: "l05",
@@ -84,6 +89,7 @@ export const L5: Lesson = {
 /** L6 — Agent Studio. The real-AI capstone: build your own agent, run it on Groq. */
 export const L6: Lesson = {
   id: "l06-agent-studio",
+  guideRef: "ten-minutes",
   order: 6,
   conceptId: "agent-studio",
   strings: "l06",

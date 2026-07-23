@@ -66,6 +66,8 @@ export interface Lesson {
   readonly realAI: RealAI;
   /** Reference into the verifier registry (optional for concept-only lessons). */
   readonly verifierRef?: string;
+  /** Guide section id this lesson's theory lives in (deep link to /#/guide). */
+  readonly guideRef?: string;
   readonly checkpoint: Checkpoint;
   readonly tier: Tier;
 }
