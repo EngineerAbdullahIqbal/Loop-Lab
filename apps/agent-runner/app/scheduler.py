@@ -21,6 +21,11 @@ class SchedulerUnavailable(Exception):
     pass
 
 
+def available() -> bool:
+    """True when APScheduler is installed and cron scheduling can run."""
+    return AsyncIOScheduler is not None
+
+
 _scheduler: Optional[Any] = None
 _jobs: dict[str, dict[str, Any]] = {}
 _traces: dict[str, list[dict[str, Any]]] = {}

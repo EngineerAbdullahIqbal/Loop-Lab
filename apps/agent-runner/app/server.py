@@ -33,7 +33,12 @@ def _sse(data: dict[str, Any]) -> str:
 
 @app.get("/api/health")
 async def health() -> dict[str, Any]:
-    return {"ok": True, "groq_sdk": AsyncGroq is not None, "mcp_sdk": mcp_available()}
+    return {
+        "ok": True,
+        "groq_sdk": AsyncGroq is not None,
+        "mcp_sdk": mcp_available(),
+        "scheduler": scheduler.available(),
+    }
 
 
 @app.post("/api/agent/run")

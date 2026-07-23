@@ -189,7 +189,8 @@ function renderScheduler(apiBase: string, buildBody: () => StudioBody): HTMLElem
   row.append(freq, atLabel, time, btn);
   card.appendChild(row);
 
-  const status = el("div", { class: "lint mono" }, "");
+  btn.disabled = true; // stays disabled until we confirm a backend is present
+  const status = el("div", { class: "lint mono" }, t("l06.sched.checking"));
   card.appendChild(status);
   const list = el("div", { class: "sched-list" });
   card.appendChild(list);
@@ -220,7 +221,34 @@ function renderScheduler(apiBase: string, buildBody: () => StudioBody): HTMLElem
     } catch { list.innerHTML = ""; }
   };
 
+  // Probe the optional backend once. On a deployed static site there's no
+  // agent-runner, so we degrade to a calm, explanatory state instead of an
+  // error — the feature is real but server-only (a browser can't run cron).
+  let ready = false;
+  (async () => {
+    try {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 2500);
+      const res = await fetch(`${apiBase}/api/health`, { signal: ctl.signal });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error();
+      const h = (await res.json()) as { scheduler?: boolean };
+      if (h.scheduler) {
+        ready = true;
+        btn.disabled = false;
+        status.textContent = t("l06.sched.ready");
+        status.classList.add("good-s");
+        refresh();
+      } else {
+        status.textContent = t("l06.sched.nosched");
+      }
+    } catch {
+      status.textContent = t("l06.sched.offline");
+    }
+  })();
+
   btn.addEventListener("click", async () => {
+    if (!ready) return;
     const c = cron();
     status.className = "lint mono";
     try {
@@ -234,12 +262,11 @@ function renderScheduler(apiBase: string, buildBody: () => StudioBody): HTMLElem
       status.classList.add("good-s");
       refresh();
     } catch {
-      status.textContent = t("l06.sched.need");
+      status.textContent = t("l06.sched.offline");
       status.classList.add("bad");
     }
   });
 
-  refresh();
   return card;
 }
 
